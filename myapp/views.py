@@ -64,7 +64,7 @@ def add_health_info(request):
 
         # Load the pre-trained model
         try:
-            model_path = os.path.join(settings.BASE_DIR, "feed_forwardNN.pkl")
+            model_path = os.path.join(settings.BASE_DIR, "XGboost.pkl")
             with open(model_path, 'rb') as model_file:
                 model = pickle.load(model_file)
 
