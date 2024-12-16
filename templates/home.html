@@ -70,7 +70,7 @@
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light px-4">
       <a class="navbar-brand" href="#">
         <img
           src="https://global-uploads.webflow.com/5e157548d6f7910beea4e2d6/62e7c3d0894fda6f903b0a5f_healthcare-logo-generator.png"
@@ -80,8 +80,18 @@
         />
         Healthcare
       </a>
-      <div class="ml-auto">
+      <div class="ml-auto d-flex align-items-center">
         {% if user.is_authenticated %}
+        <div class="user-profile d-flex align-items-center mr-3">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/016/009/835/non_2x/the-human-icon-and-logo-vector.jpg"
+            alt="Profile"
+            width="40"
+            height="40"
+            class="rounded-circle mr-2"
+          />
+          <span>{{ user.first_name }}</span>
+        </div>
         <a href="/logout/" class="btn btn-danger">Logout</a>
         {% else %}
         <a href="/login/" class="btn btn-primary">Login</a>
@@ -197,7 +207,10 @@
             <div class="col">
               <div class="bg-primary text-white p-3 rounded">
                 <h3>{{ number_users }}</h3>
-                <p>Total Entries</p>
+                <p>
+                  Total Entries <br />
+                  &nbsp;&nbsp;
+                </p>
               </div>
             </div>
             <div class="col">
@@ -270,7 +283,6 @@
       </div>
     </div>
 
-
     <h2 class="text-center mb-4">Healthcare Data Overview</h2>
     <div class="container my-4 table-wrapper">
       <table class="table table-bordered" id="patientTable">
@@ -284,24 +296,24 @@
           </tr>
         </thead>
         <tbody>
-          {% for users in user_data %}
-            <tr>
-              <td>{{ users.heart_rate }}</td>
-              <!-- Assuming 'age' is part of your location data -->
-              <td>{{ users.bp_hi }}</td>
-              <!-- Assuming 'gender' is part of your location data -->
-              <td>{{ users.bp_lo }}</td>
-              <!-- Assuming 'alert' is part of your location data -->
-              <td>{{ users.body_temp }}</td>
-              <td>{{ users.alert }}</td>
-            </tr>
+          {% for user in user_data %}
+          <tr>
+            <td>{{ user.heart_rate }}</td>
+            <td>{{ user.bp_hi }}</td>
+            <td>{{ user.bp_lo }}</td>
+            <td>{{ user.body_temp }}</td>
+            <td>{{ user.alert }}</td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
 
-    <div id="map" class="mx-auto my-4" style="max-width: 90%; border: 1px solid #ccc; border-radius: 8px">
-    </div>
+    <div
+      id="map"
+      class="mx-auto my-4"
+      style="max-width: 90%; border: 1px solid #ccc; border-radius: 8px"
+    ></div>
 
     {% if user.is_superuser %}
     <div class="container mt-5">
@@ -319,7 +331,12 @@
     </div>
 
     {% else %}
-      <button class="btn btn-submit" onclick="loadUserData('{{ user.first_name }}')">Draw Graph</button>
+    <button
+      class="btn btn-submit"
+      onclick="loadUserData('{{ user.first_name }}')"
+    >
+      Draw Graph
+    </button>
     {% endif %}
 
     <div class="row mt-4">
@@ -351,262 +368,262 @@
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
     <!-- Map Initialization Script -->
     <script>
-                      mapboxgl.accessToken = "pk.eyJ1IjoiaGdmZWRjYmEiLCJhIjoiY200aGFtNTl2MDQxczJxc2lxcnQxaDZ1dyJ9.BZKx0kx6N5_FYrQgfpxQvg"; // Replace with your access token
+                          mapboxgl.accessToken = "pk.eyJ1IjoiaGdmZWRjYmEiLCJhIjoiY200aGFtNTl2MDQxczJxc2lxcnQxaDZ1dyJ9.BZKx0kx6N5_FYrQgfpxQvg"; // Replace with your access token
 
-                      const locations = {{ locations|safe }}; // Directly use the JSON-safe variable passed from Django
+                          const locations = {{ locations|safe }}; // Directly use the JSON-safe variable passed from Django
 
-                      const map = new mapboxgl.Map({
-                          container: "map",
-                          style: "mapbox://styles/mapbox/streets-v11",
-                          center: [77.209, 28.6139], // Default center (Longitude, Latitude)
-                          zoom: 10
-                      });
+                          const map = new mapboxgl.Map({
+                              container: "map",
+                              style: "mapbox://styles/mapbox/streets-v11",
+                              center: [77.209, 28.6139], // Default center (Longitude, Latitude)
+                              zoom: 10
+                          });
 
-                      // Add navigation controls to the map
-                      const nav = new mapboxgl.NavigationControl();
-                      map.addControl(nav, "top-left");
+                          // Add navigation controls to the map
+                          const nav = new mapboxgl.NavigationControl();
+                          map.addControl(nav, "top-left");
 
-                      // Create a bounding box to include all markers
-                      const geojson = {
-                        type: 'FeatureCollection',
-                        features: locations.map(location => ({
-                            type: 'Feature',
-                            geometry: {
-                                type: 'Point',
-                                coordinates: [location.longitude, location.latitude]
-                            },
-                            properties: {
-                                name: location.name
+                          // Create a bounding box to include all markers
+                          const geojson = {
+                            type: 'FeatureCollection',
+                            features: locations.map(location => ({
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [location.longitude, location.latitude]
+                                },
+                                properties: {
+                                    name: location.name
+                                }
+                            }))
+                        };
+
+                        // Add a source for the GeoJSON data
+                        map.on('load', () => {
+                            map.addSource('locations', {
+                                type: 'geojson',
+                                data: geojson
+                            });
+
+                            // Add a layer to display the points as blue circles
+                            map.addLayer({
+                                id: 'locations-layer',
+                                type: 'circle',
+                                source: 'locations',
+                                paint: {
+                                    'circle-radius': 4,          // Size of the dot
+                                    'circle-color': '#007bff',  // Blue color
+                                    'circle-opacity': 0.8       // Slight transparency
+                                }
+                            });
+
+                            // Adjust the map to fit all points
+                            const bounds = new mapboxgl.LngLatBounds();
+                            locations.forEach(location => {
+                                bounds.extend([location.longitude, location.latitude]);
+                            });
+                            map.fitBounds(bounds, { padding: 50 });
+                        });
+
+                        document.addEventListener('DOMContentLoaded', function () {
+                          const tableRows = document.querySelectorAll('#patientTable tbody tr');
+
+                          tableRows.forEach(row => {
+                            const alertCell = row.querySelector('td:nth-child(5)'); // Select the 5th cell (Alerts column)
+                            if (alertCell) {
+                              const alertText = alertCell.textContent.trim();
+                              if (alertText.charAt(0).toUpperCase() === 'W') {
+                                row.style.backgroundColor = 'red';
+                                row.style.color = 'red'; // Optional for better contrast
+                              }
                             }
-                        }))
-                    };
-
-                    // Add a source for the GeoJSON data
-                    map.on('load', () => {
-                        map.addSource('locations', {
-                            type: 'geojson',
-                            data: geojson
+                          });
                         });
 
-                        // Add a layer to display the points as blue circles
-                        map.addLayer({
-                            id: 'locations-layer',
-                            type: 'circle',
-                            source: 'locations',
-                            paint: {
-                                'circle-radius': 4,          // Size of the dot
-                                'circle-color': '#007bff',  // Blue color
-                                'circle-opacity': 0.8       // Slight transparency
-                            }
-                        });
-
-                        // Adjust the map to fit all points
-                        const bounds = new mapboxgl.LngLatBounds();
-                        locations.forEach(location => {
-                            bounds.extend([location.longitude, location.latitude]);
-                        });
-                        map.fitBounds(bounds, { padding: 50 });
-                    });
-
-                    document.addEventListener('DOMContentLoaded', function () {
-                      const tableRows = document.querySelectorAll('#patientTable tbody tr');
-
-                      tableRows.forEach(row => {
-                        const alertCell = row.querySelector('td:nth-child(5)'); // Select the 5th cell (Alerts column)
-                        if (alertCell) {
-                          const alertText = alertCell.textContent.trim();
-                          if (alertText.charAt(0).toUpperCase() === 'W') {
-                            row.style.backgroundColor = 'red';
-                            row.style.color = 'red'; // Optional for better contrast
-                          }
-                        }
-                      });
-                    });
 
 
 
+                        document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("healthForm");
 
-                    document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("healthForm");
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the form from submitting traditionally
 
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault(); // Prevent the form from submitting traditionally
+          // Collect form data
+          const formData = new FormData(form);
 
-      // Collect form data
-      const formData = new FormData(form);
+          try {
+            // Send the form data to the backend
+            const response = await fetch("{% url 'add_health_info' %}", {
+              method: "POST",
+              headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+              },
+              body: formData,
+            });
 
-      try {
-        // Send the form data to the backend
-        const response = await fetch("{% url 'add_health_info' %}", {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-          },
-          body: formData,
+            const data = await response.json(); // Parse the JSON response
+
+            // Display a popup with the status
+            if (data.status === "success") {
+              alert("Health information added successfully!");
+            } else {
+              alert("Failed to add health information. Please try again.");
+            }
+          } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("An error occurred. Please try again later.");
+          }
         });
+      });
 
-        const data = await response.json(); // Parse the JSON response
+                          document.addEventListener("DOMContentLoaded", () => {
+                        const healthForm = document.getElementById("healthForm");
+                        const successMessage = document.getElementById("successMessage");
 
-        // Display a popup with the status
-        if (data.status === "success") {
-          alert("Health information added successfully!");
-        } else {
-          alert("Failed to add health information. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        alert("An error occurred. Please try again later.");
-      }
-    });
-  });
-
-                      document.addEventListener("DOMContentLoaded", () => {
-                    const healthForm = document.getElementById("healthForm");
-                    const successMessage = document.getElementById("successMessage");
-
-                    // Disable the form initially
-                    healthForm.querySelectorAll('input, select').forEach(element => {
-                      element.disabled = true;
-                    });
-                    healthForm.querySelector('button[type="submit"]').disabled = true;
-
-                    // Function to handle XGBoost prediction
-                    function handleXGBoostPrediction(prediction) {
-                      if (prediction == 0) {
-                        // No disease detected
-                        successMessage.textContent = "Good news! Based on initial screening, no immediate health concerns detected.";
-                        successMessage.classList.remove('alert-warning');
-                        successMessage.classList.add('alert-success');
-                        successMessage.style.display = "block";
-
-                        // Keep form disabled
+                        // Disable the form initially
                         healthForm.querySelectorAll('input, select').forEach(element => {
                           element.disabled = true;
                         });
                         healthForm.querySelector('button[type="submit"]').disabled = true;
-                      } else if (prediction == 1) {
-                        // Potential disease detected
-                        successMessage.textContent = "Potential health concern detected. Please fill out the detailed form for further assessment.";
-                        successMessage.classList.remove('alert-success');
-                        successMessage.classList.add('alert-warning');
-                        successMessage.style.display = "block";
 
-                        // Enable form for more detailed input
-                        healthForm.querySelectorAll('input, select').forEach(element => {
-                          element.disabled = false;
-                        });
-                        healthForm.querySelector('button[type="submit"]').disabled = false;
-                      }
+                        // Function to handle XGBoost prediction
+                        function handleXGBoostPrediction(prediction) {
+                          if (prediction == 0) {
+                            // No disease detected
+                            successMessage.textContent = "Good news! Based on initial screening, no immediate health concerns detected.";
+                            successMessage.classList.remove('alert-warning');
+                            successMessage.classList.add('alert-success');
+                            successMessage.style.display = "block";
+
+                            // Keep form disabled
+                            healthForm.querySelectorAll('input, select').forEach(element => {
+                              element.disabled = true;
+                            });
+                            healthForm.querySelector('button[type="submit"]').disabled = true;
+                          } else if (prediction == 1) {
+                            // Potential disease detected
+                            successMessage.textContent = "Potential health concern detected. Please fill out the detailed form for further assessment.";
+                            successMessage.classList.remove('alert-success');
+                            successMessage.classList.add('alert-warning');
+                            successMessage.style.display = "block";
+
+                            // Enable form for more detailed input
+                            healthForm.querySelectorAll('input, select').forEach(element => {
+                              element.disabled = false;
+                            });
+                            healthForm.querySelector('button[type="submit"]').disabled = false;
+                          }
+                        }
+
+                        // Fetch initial XGBoost prediction when page loads
+                        async function fetchInitialPrediction() {
+                          try {
+                            // const response = await fetch('/api/initial-prediction');
+                            // const data = await response.json();
+                            handleXGBoostPrediction("{{xgb_prediction}}");
+                            console.log("{{xgb_prediction}}");
+                          } catch (error) {
+                            // console.error('Error fetching initial prediction:', error);
+
+                            // Fallback: show error message and keep form disabled
+                            successMessage.textContent = "Unable to perform initial health screening. Please contact support.";
+                            successMessage.classList.remove('alert-success');
+                            successMessage.classList.add('alert-warning');
+                            successMessage.style.display = "block";
+                          }
+                        }
+
+                        // Call the function to fetch and handle initial prediction
+                        fetchInitialPrediction();
+                      });
+
+                    // Create chart instances with zoom for all four charts
+                    const lowBloodPressureCtx = document.getElementById("lowBloodPressureChart").getContext("2d");
+                    const highBloodPressureCtx = document.getElementById("highBloodPressureChart").getContext("2d");
+                    const heartRateCtx = document.getElementById("heartRateChart").getContext("2d");
+                    const bodyTemperatureCtx = document.getElementById("bodyTemperatureChart").getContext("2d");
+
+                    const lowBloodPressureChart = createChart(lowBloodPressureCtx, "Low Blood Pressure");
+                    const highBloodPressureChart = createChart(highBloodPressureCtx, "High Blood Pressure");
+                    const heartRateChart = createChart(heartRateCtx, "Heart Rate");
+                    const bodyTemperatureChart = createChart(bodyTemperatureCtx, "Body Temperature");
+
+                    function createChart(ctx, label) {
+                      return new Chart(ctx, {
+                        type: "line",
+                        data: {
+                          labels: [], // Time labels
+                          datasets: [
+                            {
+                              label: label,
+                              data: [],
+                              borderColor: getRandomColor(),
+                              fill: false,
+                            },
+                          ],
+                        },
+                        options: {
+                          responsive: true,
+                          scales: {
+                            x: {
+                              title: { display: true, text: "Time" },
+                            },
+                            y: {
+                              title: { display: true, text: "Values" },
+                            },
+                          },
+                          plugins: {
+                            zoom: {
+                              zoom: {
+                                wheel: {
+                                  enabled: true, // Allow zooming via the mouse wheel
+                                },
+                                pinch: {
+                                  enabled: true, // Allow zooming via pinch gestures
+                                },
+                                mode: "xy", // Enable zooming in both x and y directions
+                              },
+                              pan: {
+                                enabled: true, // Allow panning
+                                mode: "xy", // Enable panning in both x and y directions
+                              },
+                            },
+                          },
+                        },
+                      });
                     }
 
-                    // Fetch initial XGBoost prediction when page loads
-                    async function fetchInitialPrediction() {
-                      try {
-                        // const response = await fetch('/api/initial-prediction');
-                        // const data = await response.json();
-                        handleXGBoostPrediction("{{xgb_prediction}}");
-                        console.log("{{xgb_prediction}}");
-                      } catch (error) {
-                        // console.error('Error fetching initial prediction:', error);
-
-                        // Fallback: show error message and keep form disabled
-                        successMessage.textContent = "Unable to perform initial health screening. Please contact support.";
-                        successMessage.classList.remove('alert-success');
-                        successMessage.classList.add('alert-warning');
-                        successMessage.style.display = "block";
+                    function getRandomColor() {
+                      const letters = "0123456789ABCDEF";
+                      let color = "#";
+                      for (let i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
                       }
+                      return color;
                     }
 
-                    // Call the function to fetch and handle initial prediction
-                    fetchInitialPrediction();
-                  });
+                    async function loadUserData(username) {
+                      if (!username) return;
 
-                // Create chart instances with zoom for all four charts
-                const lowBloodPressureCtx = document.getElementById("lowBloodPressureChart").getContext("2d");
-                const highBloodPressureCtx = document.getElementById("highBloodPressureChart").getContext("2d");
-                const heartRateCtx = document.getElementById("heartRateChart").getContext("2d");
-                const bodyTemperatureCtx = document.getElementById("bodyTemperatureChart").getContext("2d");
+                      // Fetch data dynamically from the server
+                      const response = await fetch(`/api/user-data?username=${username}`);
+                      const userData = await response.json();
 
-                const lowBloodPressureChart = createChart(lowBloodPressureCtx, "Low Blood Pressure");
-                const highBloodPressureChart = createChart(highBloodPressureCtx, "High Blood Pressure");
-                const heartRateChart = createChart(heartRateCtx, "Heart Rate");
-                const bodyTemperatureChart = createChart(bodyTemperatureCtx, "Body Temperature");
+                      // Update charts with fetched data
+                      updateChart(lowBloodPressureChart, userData.timestamps, userData.low_bp);
+                      updateChart(highBloodPressureChart, userData.timestamps, userData.high_bp);
+                      updateChart(heartRateChart, userData.timestamps, userData.heart_rate);
+                      updateChart(bodyTemperatureChart, userData.timestamps, userData.body_temp);
+                    }
 
-                function createChart(ctx, label) {
-                  return new Chart(ctx, {
-                    type: "line",
-                    data: {
-                      labels: [], // Time labels
-                      datasets: [
-                        {
-                          label: label,
-                          data: [],
-                          borderColor: getRandomColor(),
-                          fill: false,
-                        },
-                      ],
-                    },
-                    options: {
-                      responsive: true,
-                      scales: {
-                        x: {
-                          title: { display: true, text: "Time" },
-                        },
-                        y: {
-                          title: { display: true, text: "Values" },
-                        },
-                      },
-                      plugins: {
-                        zoom: {
-                          zoom: {
-                            wheel: {
-                              enabled: true, // Allow zooming via the mouse wheel
-                            },
-                            pinch: {
-                              enabled: true, // Allow zooming via pinch gestures
-                            },
-                            mode: "xy", // Enable zooming in both x and y directions
-                          },
-                          pan: {
-                            enabled: true, // Allow panning
-                            mode: "xy", // Enable panning in both x and y directions
-                          },
-                        },
-                      },
-                    },
-                  });
-                }
+                    function updateChart(chart, labels, data) {
+                      chart.data.labels = labels;
+                      chart.data.datasets[0].data = data;
+                      chart.update();
+                    }
 
-                function getRandomColor() {
-                  const letters = "0123456789ABCDEF";
-                  let color = "#";
-                  for (let i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                  }
-                  return color;
-                }
-
-                async function loadUserData(username) {
-                  if (!username) return;
-
-                  // Fetch data dynamically from the server
-                  const response = await fetch(`/api/user-data?username=${username}`);
-                  const userData = await response.json();
-
-                  // Update charts with fetched data
-                  updateChart(lowBloodPressureChart, userData.timestamps, userData.low_bp);
-                  updateChart(highBloodPressureChart, userData.timestamps, userData.high_bp);
-                  updateChart(heartRateChart, userData.timestamps, userData.heart_rate);
-                  updateChart(bodyTemperatureChart, userData.timestamps, userData.body_temp);
-                }
-
-                function updateChart(chart, labels, data) {
-                  chart.data.labels = labels;
-                  chart.data.datasets[0].data = data;
-                  chart.update();
-                }
-
-      new DataTable('#example');
+          new DataTable('#example');
     </script>
   </body>
 </html>
