@@ -83,10 +83,10 @@ def add_health_info(request):
             # Convert prediction to human-readable message
             prediction_message = (prediction > 0.5).astype(int)
 
-            status = "No Cardio"
+            status = 0
 
             if prediction_message:
-                status = "Yes Cardio"
+                status = 1
 
             # Create or update health info
             # health_info = HealthInfo.objects.create(
@@ -125,19 +125,19 @@ def get_user_data(request):
 
     # Assuming the data comes from the CSV or database
     csv_file_path = "data/locations.csv"
-    user_data = {"timestamps": [], "low_bp": [], "high_bp": [], "heart_rate": [], "body_temp": []}
+    userData = {"timestamps": [], "low_bp": [], "high_bp": [], "heart_rate": [], "body_temp": []}
 
     with open(csv_file_path, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             if row["name"] == username:
-                user_data["timestamps"].append(row["timestamp"])
-                user_data["low_bp"].append(float(row["blood_pressure_bottom"]))
-                user_data["high_bp"].append(float(row["blood_pressure_top"]))
-                user_data["heart_rate"].append(float(row["heart_rate"]))
-                user_data["body_temp"].append(float(row["body_temperature"]))
+                userData["timestamps"].append(row["timestamp"])
+                userData["low_bp"].append(float(row["blood_pressure_bottom"]))
+                userData["high_bp"].append(float(row["blood_pressure_top"]))
+                userData["heart_rate"].append(float(row["heart_rate"]))
+                userData["body_temp"].append(float(row["body_temperature"]))
 
-    return JsonResponse(user_data)
+    return JsonResponse(userData)
 
 @login_required
 def home(request):
@@ -187,7 +187,9 @@ def home(request):
                             user_data.append({'name': row['name'],
                                               'alert': row['alert'],
                                               'age': row['age'],
-                                              'gender': row['gender']})
+                                              'gender': row['gender'],
+
+                                              })
 
                     locations.append(location_data)
                     alert_type = location_data['alert'].split('!')[0].strip().lower()
@@ -301,7 +303,9 @@ def home(request):
                                               'heart_rate': row['heart_rate'],
                                               'bp_hi': row['blood_pressure_top'],
                                               'bp_lo': row['blood_pressure_bottom'],
-                                              'body_temp': row['body_temperature']
+                                              'body_temp': row['body_temperature'],
+                                              'age':row['age'],
+                                              'gender':row['gender']
                                               })
 
                         locations.append(location_data)
@@ -334,6 +338,9 @@ def home(request):
         weight = float(bmi) * (height) * height
         height = height * 100
 
+        popup_age=int(age/365)
+        popup_gender=gender
+
         xgb_input = np.array([[
             int(age),
             gender_numeric,
@@ -360,6 +367,8 @@ def home(request):
         total_alerts = warning + emergency
         return render(request, 'home.html',
                       {'user': request.user,
+                       'popup_age':popup_age,
+                       'popup_gender':popup_gender,
                        'locations': locations,
                        'length': length,
                        'number_users': number_users,
