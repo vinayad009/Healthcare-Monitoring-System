@@ -18,6 +18,7 @@ import xgboost as xgb
 from .models import UserDetail
 from django.views.decorators.csrf import csrf_exempt
 from sklearn.preprocessing import StandardScaler
+from .LLM_model.LLM import suggestions
 
 
 @login_required
@@ -109,15 +110,31 @@ def add_health_info(request):
             if prediction_message:
                 status = 1
 
+            summary = suggestions(
+                age=age,
+                gender=user.userdetail.gender,
+                ap_hi=high_bp,
+                ap_lo=low_bp,
+                active=active,
+                smoke=smoke,
+                cholesterol=chol,
+                glucose=glucose,
+                model_prediction=status
+            )
+
+            print(summary)
+
             return JsonResponse({
                 'status': 'success',
-                'message': status
+                'message': status,
+                'summary': summary
             })
         except Exception as e:
             print(e)
             return JsonResponse({
                 'status': 'error',
-                'message': f'Prediction error: {str(e)}'
+                'message': f'Prediction error: {str(e)}',
+                'summary': 'None'
             }, status=500)
 
     else:

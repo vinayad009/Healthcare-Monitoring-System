@@ -320,6 +320,10 @@
       </div>
     </div>
 
+    <div id="suggestions" class="container mt-2 rounded" style="display: none; background-color: rgba(105, 202, 255, 0.4); white-space: pre-line;">
+      {{ summary }}
+    </div>
+
     <h2 class="text-center mb-4">Healthcare Data Overview</h2>
     <div class="container my-4 table-wrapper">
       <table class="table table-bordered" id="patientTable">
@@ -514,8 +518,11 @@
               // Display a popup with the status
               if (data.status === "success") {
                 const successMessage = document.getElementById("successMessage");
+                const suggestions = document.getElementById("suggestions");
                 successMessage.style.display = "none";
                 trainedModelMessage.style.fontWeight="bold";
+                suggestions.innerHTML = data.summary;
+                suggestions.style.display = "block";
                 if(data.message === 1)
                 {
                   trainedModelMessage.textContent = "Cardiovascular Disease predicted";
