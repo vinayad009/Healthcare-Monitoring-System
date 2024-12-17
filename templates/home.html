@@ -77,6 +77,14 @@
         cursor: pointer;
         font-weight: bold;
       }
+      .bg-stats {
+        background: rgba(59, 113, 202, 0.7);
+        color: black;
+      }
+      .bg-health {
+        background: rgba(220, 20, 60, 0.6);
+      }
+
     </style>
   </head>
   <body>
@@ -226,37 +234,38 @@
           <!-- Overview Section -->
           <h2 class="text-center mb-4">Overview of Healthcare Data</h2>
           <div class="row text-center">
+            {% if user.is_superuser %}
             <div class="col">
-              <div class="bg-primary text-white p-3 rounded">
+              <div class="bg-stats text-white p-3 rounded">
                 <h3>{{ number_users }}</h3>
                 <p>
-                  Total Entries <br />
-                  &nbsp;&nbsp;
+                  Total Entries
                 </p>
               </div>
             </div>
+            {% endif %}
             <div class="col">
-              <div class="bg-primary text-white p-3 rounded">
+              <div class="bg-stats text-white p-3 rounded">
                 <h3>{{ length }}</h3>
                 <p>Sensor Readings Recorded</p>
               </div>
             </div>
             <div class="col">
-              <div class="bg-primary text-white p-3 rounded">
+              <div class="bg-stats text-white p-3 rounded">
                 <h3>{{ total_alerts }}</h3>
                 <p>Total Alerts Detected</p>
               </div>
             </div>
             <div class="col">
-              <div class="bg-primary text-white p-3 rounded">
+              <div class="bg-stats text-white p-3 rounded">
                 <h3>{{ emergency }}</h3>
-                <p>Total Emergencies Reported</p>
+                <p>Total Anomalies</p>
               </div>
             </div>
             <div class="col">
-              <div class="bg-primary text-white p-3 rounded">
+              <div class="bg-stats text-white p-3 rounded">
                 <h3>{{ warning }}</h3>
-                <p>Total Warnings Reported</p>
+                <p>Total Warnings</p>
               </div>
             </div>
           </div>
@@ -265,39 +274,33 @@
           <h2 class="text-center my-4">Breakdown of Detected Alerts</h2>
           <div class="row text-center">
             <div class="col-md-2">
-              <div class="bg-danger text-white p-3 rounded">
+              <div class="bg-health text-white p-3 rounded">
                 <h4>{{ disease_counts.hypertension }}</h4>
                 <p>Hypertension</p>
               </div>
             </div>
             <div class="col-md-2">
-              <div class="bg-danger text-white p-3 rounded">
+              <div class="bg-health text-white p-3 rounded">
                 <h4>{{ disease_counts.hypothermia }}</h4>
                 <p>Hypothermia</p>
               </div>
             </div>
             <div class="col-md-2">
-              <div class="bg-danger text-white p-3 rounded">
+              <div class="bg-health text-white p-3 rounded">
                 <h4>{{ disease_counts.hyperthermia }}</h4>
                 <p>Hyperthermia</p>
               </div>
             </div>
             <div class="col-md-2">
-              <div class="bg-danger text-white p-3 rounded">
+              <div class="bg-health text-white p-3 rounded">
                 <h4>{{ disease_counts.hyperglycemia }}</h4>
                 <p>Hyperglycemia</p>
               </div>
             </div>
             <div class="col-md-2">
-              <div class="bg-success text-white p-3 rounded">
+              <div class="bg-health text-white p-3 rounded">
                 <h4>{{ disease_counts.fever }}</h4>
-                <p>Fever/Pyrexia</p>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="bg-success text-white p-3 rounded">
-                <h4>{{ disease_counts.tachycardia }}</h4>
-                <p>Tachycardia</p>
+                <p>Fever</p>
               </div>
             </div>
           </div>
