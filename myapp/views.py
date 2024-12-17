@@ -149,6 +149,7 @@ def get_user_data(request):
 
 @login_required
 def home(request):
+    user = request.user
     if request.user.is_superuser:
         # xgb_prediction = None
         locations = []  # List to store extracted location data
@@ -172,9 +173,8 @@ def home(request):
         with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for i, row in enumerate(reader):
-                if i == 1:  # Stop after processing 1000 rows
+                if row['name'] == user.first_name:
                     age = row['age']
-                    gender = row['gender']
                     bmi = row['bmi']
                     high_bp = row['blood_pressure_top']
                     low_bp = row['blood_pressure_bottom']
@@ -215,24 +215,23 @@ def home(request):
                     print(f"Error processing row: {row}, Error: {e}")
 
         # Debugging output to validate JSON structure
-
-        gender_numeric = 1 if gender == 'Male' else 2
-        # Default active status, you might want to modify this based on your requirements
+        gender_numeric = 2 if user.userdetail.gender == 'M' else 1
+        active = 0
         if int(heart_rate) > 120 and float(body_temp) > 36.2:
             active = 1
         else:
             active = 0
-        age = int(age)
-        age = age * 365
-        height = round(random.uniform(1, 2.3), 1)
-        height = int(height)
-        weight = float(bmi) * height * height
-        height = height * 100
+
+        weight = user.userdetail.weight
+        age = user.userdetail.age
+        high_bp = high_bp
+        low_bp = low_bp
+        height = int(sqrt(float(weight) / float(bmi)) * 100)
 
         xgb_input = np.array([[
             int(age),
-            gender_numeric,
-            height,
+            int(gender_numeric),
+            int(height),
             int(weight),
             int(high_bp),
             int(low_bp),
