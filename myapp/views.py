@@ -1,3 +1,5 @@
+from math import sqrt
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -22,17 +24,14 @@ from sklearn.preprocessing import StandardScaler
 @csrf_exempt  # Allow CSRF for API-like functionality (ensure CSRF middleware is handled correctly)
 def add_health_info(request):
     if request.method == "POST":
+        user = request.user
+
         # Extract form data
-        chol=0
-        glucose=0
-        smoke=0
-        alcohol=0
         chol = int(request.POST.get('cholesterol'))
         glucose = int(request.POST.get('glucose'))
         smoke = int(request.POST.get('smoke'))
         alcohol = int(request.POST.get('alcohol'))
         age = int()
-        gender = ""
         bmi = float()
         high_bp = int()
         low_bp = int()
@@ -46,7 +45,6 @@ def add_health_info(request):
             for i, row in enumerate(reader):
                 if row['name'] == request.user.first_name:
                     age1 = row['age']
-                    gender = row['gender']
                     bmi = row['bmi']
                     high_bp1 = row['blood_pressure_top']
                     low_bp1 = row['blood_pressure_bottom']
@@ -54,57 +52,31 @@ def add_health_info(request):
                     heart_rate = row['heart_rate']
 
         # Prepare data for prediction
-        gender_numeric=0
-        gender_numeric = 2 if gender == 'Male' else 1
-        active=0
+        gender_numeric = 2 if user.userdetail.gender == 'M' else 1
+        active = 0
         if int(heart_rate) > 120 and float(body_temp) > 36.2:
             active = 1
         else:
             active = 0
 
-        height1=0
-        height1=random.randint(150,230)
-        # height = int(height)
-        weight1=0
-        h=float(height1/100)
-        weight1= float(bmi) * h * h
-        weight1=int(weight1)
-        # Load the pre-trained model
-        # age=55
-        # height=156
-        # weight=85
-        # high_bp=140
-        # low_bp=90
+        weight = user.userdetail.weight
+        age = user.userdetail.age
+        high_bp = high_bp1
+        low_bp = low_bp1
+        height = int(sqrt(float(weight)/float(bmi)) * 100)
 
-        age=age1
-        high_bp=high_bp1
-        low_bp=low_bp1
-        height=height1
-        weight=weight1
+        age = int(age)
+        gender_numeric = int(gender_numeric)
+        height = int(height)
+        weight = int(weight)
+        high_bp = int(high_bp)
+        low_bp = int(low_bp)
+        chol = int(chol)
+        glucose = int(glucose)
+        smoke = int(smoke)
+        alcohol = int(alcohol)
+        active = int(active)
 
-        age=int(age)
-        gender_numeric=int(gender_numeric)
-        height=int(height)
-        weight=int(weight)
-        high_bp=int(high_bp)
-        low_bp=int(low_bp)
-        chol=int(chol)
-        glucose=int(glucose)
-        smoke=int(smoke)
-        alcohol=int(alcohol)
-        active=int(active)
-
-        # age=55
-        # gender_numeric=1
-        # height=156
-        # weight=85
-        # high_bp=140
-        # low_bp=90
-        # chol=3
-        # glucose=1
-        # smoke=0
-        # alcohol=0
-        # active=1
         try:
             model_path = os.path.join(settings.BASE_DIR, "XGboost1.pkl")
             with open(model_path, 'rb') as model_file:
@@ -114,13 +86,11 @@ def add_health_info(request):
             input_features = np.array([
                 age, gender_numeric, height, weight, high_bp, low_bp, chol,
                 glucose, smoke, alcohol, active
-            ]).reshape(1,-1)
+            ]).reshape(1, -1)
             print(input_features)
-
 
             # training_features = np.array([[25, 1, 170, 70, 120, 80, 150, 100, 0, 1, 1]])  # Replace with your training data
             # scaler.fit(training_features)  # Fit the scaler with training data
-
 
             # user_processed = scaler.transform(input_features)
 
@@ -133,27 +103,12 @@ def add_health_info(request):
 
             # Convert prediction to human-readable message
             # prediction_message = (prediction > 0.5).astype(int)
-            prediction_message=prediction
+            prediction_message = prediction
 
             status = 0
 
             if prediction_message:
                 status = 1
-
-            # Create or update health info
-            # health_info = HealthInfo.objects.create(
-            #     user=request.user,
-            #     phone_number=phone,
-            #     age=age,
-            #     gender=gender,
-            #     heart_rate=heart_rate,
-            #     low_bp=low_bp,
-            #     high_bp=high_bp,
-            #     height=height,
-            #     weight=weight,
-            #     body_temperature=body_temp,
-            #     prediction_result=prediction_message
-            # )
 
             return JsonResponse({
                 'status': 'success',
@@ -166,8 +121,9 @@ def add_health_info(request):
                 'message': f'Prediction error: {str(e)}'
             }, status=500)
 
-    # Render the form for GET requests
-    return render(request, "home.html")
+    else:
+        # Render the form for GET requests
+        return render(request, "home.html")
 
 
 def get_user_data(request):
