@@ -22,6 +22,10 @@ from sklearn.preprocessing import StandardScaler
 def add_health_info(request):
     if request.method == "POST":
         # Extract form data
+        chol=0
+        glucose=0
+        smoke=0
+        alcohol=0
         chol = int(request.POST.get('cholesterol'))
         glucose = int(request.POST.get('glucose'))
         smoke = int(request.POST.get('smoke'))
@@ -40,31 +44,68 @@ def add_health_info(request):
             reader = csv.DictReader(csvfile)
             for i, row in enumerate(reader):
                 if row['name'] == request.user.first_name:
-                    age = row['age']
+                    age1 = row['age']
                     gender = row['gender']
                     bmi = row['bmi']
-                    high_bp = row['blood_pressure_top']
-                    low_bp = row['blood_pressure_bottom']
+                    high_bp1 = row['blood_pressure_top']
+                    low_bp1 = row['blood_pressure_bottom']
                     body_temp = row['body_temperature']
                     heart_rate = row['heart_rate']
 
         # Prepare data for prediction
+        gender_numeric=0
         gender_numeric = 2 if gender == 'Male' else 1
-
+        active=0
         if int(heart_rate) > 120 and float(body_temp) > 36.2:
             active = 1
         else:
             active = 0
 
-        height = round(random.uniform(1, 2.3), 1)
-        height = int(height)
-        weight = float(bmi) * (height) * height
-        height = height * 100
-
-
+        height1=0
+        height1=random.randint(150,230)
+        # height = int(height)
+        weight1=0
+        h=float(height1/100)
+        weight1= float(bmi) * h * h
+        weight1=int(weight1)
         # Load the pre-trained model
+        # age=55
+        # height=156
+        # weight=85
+        # high_bp=140
+        # low_bp=90
+
+        age=age1
+        high_bp=high_bp1
+        low_bp=low_bp1
+        height=height1
+        weight=weight1
+
+        age=int(age)
+        gender_numeric=int(gender_numeric)
+        height=int(height)
+        weight=int(weight)
+        high_bp=int(high_bp)
+        low_bp=int(low_bp)
+        chol=int(chol)
+        glucose=int(glucose)
+        smoke=int(smoke)
+        alcohol=int(alcohol)
+        active=int(active)
+        
+        # age=55
+        # gender_numeric=1
+        # height=156
+        # weight=85
+        # high_bp=140
+        # low_bp=90
+        # chol=3
+        # glucose=1
+        # smoke=0
+        # alcohol=0
+        # active=1
         try:
-            model_path = os.path.join(settings.BASE_DIR, "feed_forwardNN.pkl")
+            model_path = os.path.join(settings.BASE_DIR, "XGboost1.pkl")
             with open(model_path, 'rb') as model_file:
                 model = pickle.load(model_file)
 
@@ -72,16 +113,26 @@ def add_health_info(request):
             input_features = np.array([
                 age, gender_numeric, height, weight, high_bp, low_bp, chol,
                 glucose, smoke, alcohol, active
-            ])
+            ]).reshape(1,-1)
+            print(input_features)
+            
 
-            scaler = StandardScaler()
-            input_features = scaler.fit_transform(input_features.reshape(1,-1))
-            # Make prediction
+            # training_features = np.array([[25, 1, 170, 70, 120, 80, 150, 100, 0, 1, 1]])  # Replace with your training data
+            # scaler.fit(training_features)  # Fit the scaler with training data
+
+
+            # user_processed = scaler.transform(input_features)
+
+            # # Predict using the trained model
+            # user_prediction_prob = model.predict(user_processed).flatten()[0]
+            # user_prediction = 1 if user_prediction_prob > 0.5 else 0
+
             prediction = model.predict(input_features)
             print(prediction)
 
             # Convert prediction to human-readable message
-            prediction_message = (prediction > 0.5).astype(int)
+            # prediction_message = (prediction > 0.5).astype(int)
+            prediction_message=prediction
 
             status = 0
 
