@@ -61,26 +61,25 @@ def add_health_info(request):
         else:
             active = 0
 
-        height = round(random.uniform(1, 2.3), 1)
-        height=0
-        height=random.randint(100,230)
+        height1=0
+        height1=random.randint(150,230)
         # height = int(height)
-        weight=0
-        h=float(height/100)
-        weight = float(bmi) * h * h
-        weight=int(weight)
+        weight1=0
+        h=float(height1/100)
+        weight1= float(bmi) * h * h
+        weight1=int(weight1)
         # Load the pre-trained model
-        age=55
-        gender_numeric=1
-        height=156
-        weight=85
-        high_bp=140
-        low_bp=90
+        # age=55
+        # height=156
+        # weight=85
+        # high_bp=140
+        # low_bp=90
 
         age=age1
         high_bp=high_bp1
         low_bp=low_bp1
-
+        height=height1
+        weight=weight1
 
         age=int(age)
         gender_numeric=int(gender_numeric)
@@ -93,6 +92,18 @@ def add_health_info(request):
         smoke=int(smoke)
         alcohol=int(alcohol)
         active=int(active)
+        
+        # age=55
+        # gender_numeric=1
+        # height=156
+        # weight=85
+        # high_bp=140
+        # low_bp=90
+        # chol=3
+        # glucose=1
+        # smoke=0
+        # alcohol=0
+        # active=1
         try:
             model_path = os.path.join(settings.BASE_DIR, "XGboost1.pkl")
             with open(model_path, 'rb') as model_file:
