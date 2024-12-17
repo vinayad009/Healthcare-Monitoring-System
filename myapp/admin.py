@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HealthInfo
+from .models import UserDetail
 
 # Register your models here.
-admin.site.register(HealthInfo)
+admin.site.register(UserDetail)

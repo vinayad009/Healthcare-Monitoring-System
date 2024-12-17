@@ -13,9 +13,10 @@ import os
 from django.conf import settings
 import pandas as pd
 import xgboost as xgb
-from .models import HealthInfo
+from .models import UserDetail
 from django.views.decorators.csrf import csrf_exempt
 from sklearn.preprocessing import StandardScaler
+
 
 @login_required
 @csrf_exempt  # Allow CSRF for API-like functionality (ensure CSRF middleware is handled correctly)
@@ -92,7 +93,7 @@ def add_health_info(request):
         smoke=int(smoke)
         alcohol=int(alcohol)
         active=int(active)
-        
+
         # age=55
         # gender_numeric=1
         # height=156
@@ -115,7 +116,7 @@ def add_health_info(request):
                 glucose, smoke, alcohol, active
             ]).reshape(1,-1)
             print(input_features)
-            
+
 
             # training_features = np.array([[25, 1, 170, 70, 120, 80, 150, 100, 0, 1, 1]])  # Replace with your training data
             # scaler.fit(training_features)  # Fit the scaler with training data
@@ -189,6 +190,7 @@ def get_user_data(request):
                 userData["body_temp"].append(float(row["body_temperature"]))
 
     return JsonResponse(userData)
+
 
 @login_required
 def home(request):
@@ -355,8 +357,8 @@ def home(request):
                                               'bp_hi': row['blood_pressure_top'],
                                               'bp_lo': row['blood_pressure_bottom'],
                                               'body_temp': row['body_temperature'],
-                                              'age':row['age'],
-                                              'gender':row['gender']
+                                              'age': row['age'],
+                                              'gender': row['gender']
                                               })
 
                         locations.append(location_data)
@@ -389,8 +391,8 @@ def home(request):
         weight = float(bmi) * (height) * height
         height = height * 100
 
-        popup_age=int(age/365)
-        popup_gender=gender
+        popup_age = int(age / 365)
+        popup_gender = gender
 
         xgb_input = np.array([[
             int(age),
@@ -418,8 +420,8 @@ def home(request):
         total_alerts = warning + emergency
         return render(request, 'home.html',
                       {'user': request.user,
-                       'popup_age':popup_age,
-                       'popup_gender':popup_gender,
+                       'popup_age': popup_age,
+                       'popup_gender': popup_gender,
                        'locations': locations,
                        'length': length,
                        'number_users': number_users,
@@ -466,6 +468,7 @@ def signup_view(request):
 
     if request.method == 'POST':
         name = request.POST['name']
+        gender = request.POST['gender']
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
@@ -477,11 +480,17 @@ def signup_view(request):
         else:
             # Create a new user
             user = User.objects.create_user(
-                first_name = name,
+                first_name=name,
                 username=email,  # Use email as the username
                 email=email,
                 password=password
             )
+
+            # Update profile details
+            profile_ = user.userdetail
+            profile_.gender = 'M' if gender == 'Male' else 'F'
+            profile_.save()
+
             user.save()
             login(request, user)
             return redirect('home')
@@ -492,3 +501,21 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+
+def profile(request):
+    if request.method == 'POST':
+        user = request.user
+        user.email = request.POST.get('email')
+
+        # Update profile fields (ensure a Profile model exists)
+        profile_ = UserDetail.objects.get(user=user)
+        profile_.weight = request.POST.get('weight')
+        profile_.age = request.POST.get('age')
+
+        print(request.POST.get('age'))
+        profile_.save(update_fields=['weight', 'age'])
+
+        user.save(update_fields=['email'])
+        return redirect('profile')  # Redirect back to the profile page
+    return render(request, 'profile.html')

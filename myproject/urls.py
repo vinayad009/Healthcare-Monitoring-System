@@ -23,7 +23,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
-    path("api/user-data/", views.get_user_data, name="get_user_data"),
+    path('api/user-data/', views.get_user_data, name="get_user_data"),
     path('add-health-info/', views.add_health_info, name='add_health_info'),
+    path('profile/', views.profile, name='profile'),
 ]
 

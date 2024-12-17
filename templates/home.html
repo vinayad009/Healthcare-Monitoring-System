@@ -81,7 +81,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light px-4">
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="{% url 'home' %}">
         <img
           src="https://global-uploads.webflow.com/5e157548d6f7910beea4e2d6/62e7c3d0894fda6f903b0a5f_healthcare-logo-generator.png"
           alt="Logo"
@@ -93,26 +93,28 @@
       <div class="ml-auto d-flex align-items-center">
         {% if user.is_authenticated %}
         <div class="user-profile d-flex align-items-center mr-3">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/016/009/835/non_2x/the-human-icon-and-logo-vector.jpg"
-            alt="Profile"
-            width="40"
-            height="40"
-            class="rounded-circle mr-2"
-          />
-          <span
-            id="userInfo"
-            style="cursor: pointer; font-weight: bold"
-            tabindex="0"
-            data-bs-toggle="popover"
-            data-bs-trigger="hover focus"
-            data-bs-html="true"
-            data-bs-placement="bottom"
-            title=" Age: {{popup_age}} 
-Gender: {{popup_gender}}"
-          >
-            {{user.first_name}}
-          </span>
+          <a href="{% url 'profile' %}" style="text-decoration: none; color: inherit;">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/016/009/835/non_2x/the-human-icon-and-logo-vector.jpg"
+              alt="Profile"
+              width="40"
+              height="40"
+              class="rounded-circle mr-2"
+            />
+            <span
+              id="userInfo"
+              style="cursor: pointer; font-weight: bold"
+              tabindex="0"
+              data-bs-toggle="popover"
+              data-bs-trigger="hover focus"
+              data-bs-html="true"
+              data-bs-placement="bottom"
+              title=" Age: {{popup_age}}
+  Gender: {{popup_gender}}"
+            >
+              {{user.first_name}}
+            </span>
+          </a>
         </div>
         <a href="/logout/" class="btn btn-danger">Logout</a>
         {% else %}
