@@ -87,7 +87,6 @@ def add_health_info(request):
                 age, gender_numeric, height, weight, high_bp, low_bp, chol,
                 glucose, smoke, alcohol, active
             ]).reshape(1, -1)
-            print(input_features)
 
             # training_features = np.array([[25, 1, 170, 70, 120, 80, 150, 100, 0, 1, 1]])  # Replace with your training data
             # scaler.fit(training_features)  # Fit the scaler with training data
