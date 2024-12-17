@@ -290,7 +290,6 @@ def home(request):
             for i, row in enumerate(reader):
                 if row['name'] == first_name:
                     age = row['age']
-                    gender = row['gender']
                     bmi = row['bmi']
                     high_bp = row['blood_pressure_top']
                     low_bp = row['blood_pressure_bottom']
@@ -331,22 +330,18 @@ def home(request):
                         print(f"Error processing row: {row}, Error: {e}")
 
         # Debugging output to validate JSON structure
-
-        gender_numeric = 1 if gender == 'Male' else 2
-        # Default active status, you might want to modify this based on your requirements
+        gender_numeric = 2 if user.userdetail.gender == 'M' else 1
+        active = 0
         if int(heart_rate) > 120 and float(body_temp) > 36.2:
             active = 1
         else:
             active = 0
-        age = int(age)
-        age = age * 365
-        height = round(random.uniform(1, 2.3), 1)
-        height = int(height)
-        weight = float(bmi) * (height) * height
-        height = height * 100
 
-        popup_age = int(age / 365)
-        popup_gender = gender
+        weight = user.userdetail.weight
+        age = user.userdetail.age
+        high_bp = high_bp
+        low_bp = low_bp
+        height = int(sqrt(float(weight) / float(bmi)) * 100)
 
         xgb_input = np.array([[
             int(age),
@@ -374,8 +369,6 @@ def home(request):
         total_alerts = warning + emergency
         return render(request, 'home.html',
                       {'user': request.user,
-                       'popup_age': popup_age,
-                       'popup_gender': popup_gender,
                        'locations': locations,
                        'length': length,
                        'number_users': number_users,
