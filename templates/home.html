@@ -330,6 +330,28 @@
     <h2 class="text-center mb-4">Healthcare Data Overview</h2>
     <div class="container my-4 table-wrapper">
       <table class="table table-bordered" id="patientTable">
+        {% if user.is_superuser %}
+        <thead>
+          <tr>
+            <th>Heart Rate</th>
+            <th>Systolic BP</th>
+            <th>Diastolic BP</th>
+            <th>Body Temp</th>
+            <th>Alerts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in user_data %}
+          <tr>
+            <td>{{ user.heart_rate }}</td>
+            <td>{{ user.high_bp }}</td>
+            <td>{{ user.low_bp }}</td>
+            <td>{{ user.body_temp }}</td>
+            <td>{{ user.alert }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% else %}
         <thead>
           <tr>
             <th>Heart Rate</th>
@@ -350,11 +372,12 @@
           </tr>
           {% endfor %}
         </tbody>
+        {% endif %}
       </table>
     </div>
 
-<!--    Get manual inputs-->
-      <!-- Button trigger modal -->
+    <!-- Get manual inputs-->
+    <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary d-block mx-auto" data-toggle="modal" data-target="#exampleModalCenter">
       Enter data manually
     </button>

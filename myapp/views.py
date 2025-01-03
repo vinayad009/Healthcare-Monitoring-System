@@ -316,7 +316,10 @@ def home(request):
                                               'alert': row['alert'],
                                               'age': row['age'],
                                               'gender': row['gender'],
-
+                                              'heart_rate': row['heart_rate'],
+                                              'high_bp': row['blood_pressure_top'],
+                                              "low_bp": row['blood_pressure_bottom'],
+                                              "body_temp": row['body_temperature']
                                               })
 
                     locations.append(location_data)
