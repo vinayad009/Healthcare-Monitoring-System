@@ -12,6 +12,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 
 # Signal to save the Profile whenever the User is saved
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.userdetail.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.userdetail.save()

@@ -355,7 +355,7 @@ def home(request):
             active = 0
 
         weight = user.userdetail.weight
-        age = user.userdetail.age
+        user.userdetail.age = age
         high_bp = high_bp
         low_bp = low_bp
         height = int(sqrt(float(weight) / float(bmi)) * 100)
@@ -433,6 +433,7 @@ def signup_view(request):
     if request.method == 'POST':
         name = request.POST['name']
         gender = request.POST['gender']
+        weight = request.POST['weight']
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
@@ -453,6 +454,7 @@ def signup_view(request):
             # Update profile details
             profile_ = user.userdetail
             profile_.gender = 'M' if gender == 'Male' else 'F'
+            profile_.weight = weight
             profile_.save()
 
             user.save()
