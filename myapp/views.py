@@ -142,6 +142,100 @@ def add_health_info(request):
         return render(request, "home.html")
 
 
+@login_required
+@csrf_exempt  # Allow CSRF for API-like functionality (ensure CSRF middleware is handled correctly)
+def add_full_health_info(request):
+    if request.method == "POST":
+        user = request.user
+        chol = int(request.POST.get('cholesterol'))
+        glucose = int(request.POST.get('glucose'))
+        smoke = int(request.POST.get('smoke'))
+        alcohol = int(request.POST.get('alcohol'))
+        height = int(request.POST.get('height'))
+        weight = int(request.POST.get('weight'))
+        high_bp = int(request.POST.get('high_bp'))
+        low_bp = int(request.POST.get('low_bp'))
+        body_temp = float(request.POST.get('body_temp'))
+        heart_rate = int(request.POST.get('heart_rate'))
+        age = user.userdetail.age
+
+        gender = user.userdetail.gender
+        gender_numeric = 2 if gender == 'M' else 1
+
+        active = int(0)
+        if int(heart_rate) > 120 and float(body_temp) > 36.2:
+            active = 1
+        else:
+            active = 0
+
+        age = int(age)
+        gender_numeric = int(gender_numeric)
+        height = int(height)
+        weight = int(weight)
+        high_bp = int(high_bp)
+        low_bp = int(low_bp)
+        chol = int(chol)
+        glucose = int(glucose)
+        smoke = int(smoke)
+        alcohol = int(alcohol)
+        active = int(active)
+
+        try:
+            model_path = os.path.join(settings.BASE_DIR, "XGboost1.pkl")
+            with open(model_path, 'rb') as model_file:
+                model = pickle.load(model_file)
+
+            # Prepare input features for prediction
+            input_features = np.array([
+                age, gender_numeric, height, weight, high_bp, low_bp, chol,
+                glucose, smoke, alcohol, active
+            ]).reshape(1, -1)
+
+            prediction = model.predict(input_features)
+            print(prediction)
+
+            # Convert prediction to human-readable message
+            # prediction_message = (prediction > 0.5).astype(int)
+            prediction_message = prediction
+
+            status = 0
+
+            if prediction_message:
+                status = 1
+
+            summary = suggestions(
+                age=age,
+                gender=gender,
+                ap_hi=high_bp,
+                ap_lo=low_bp,
+                active=active,
+                smoke=smoke,
+                cholesterol=chol,
+                glucose=glucose,
+                model_prediction=status
+            )
+
+            print(summary)
+
+            return JsonResponse({
+                'status': 'success',
+                'message': status,
+                'summary': summary
+            })
+
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Prediction error: {str(e)}',
+                'summary': 'None'
+            }, status=500)
+
+    else:
+        # Render the form for GET requests
+        return render(request, "home.html")
+
+
 def get_user_data(request):
     username = request.GET.get("username")
     if not username:

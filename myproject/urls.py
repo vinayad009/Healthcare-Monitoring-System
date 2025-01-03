@@ -25,6 +25,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('api/user-data/', views.get_user_data, name="get_user_data"),
     path('add-health-info/', views.add_health_info, name='add_health_info'),
+    path('add-full-health-info/', views.add_full_health_info, name='add_full_health_info'),
     path('profile/', views.profile, name='profile'),
 ]
 
