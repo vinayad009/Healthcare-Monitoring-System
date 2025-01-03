@@ -20,12 +20,13 @@ from myapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('login/', views.login_view, name='login'),
+    path('login/<int:organisation>/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
     path('api/user-data/', views.get_user_data, name="get_user_data"),
     path('add-health-info/', views.add_health_info, name='add_health_info'),
     path('add-full-health-info/', views.add_full_health_info, name='add_full_health_info'),
     path('profile/', views.profile, name='profile'),
+    # path('login/1/', views.login_view, name='organisation_login')
 ]
 

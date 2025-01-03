@@ -276,6 +276,13 @@ def home(request):
             "tachycardia": 0
         }
         user_data = []
+        # gender = None
+        # age = None
+        # bmi = None
+        # high_bp = None
+        # low_bp = None
+        # body_temp = None
+        # heart_rate = None
 
         xgb_model_path = os.path.join(settings.BASE_DIR, "trained_xgb_model.pkl")
         with open(xgb_model_path, 'rb') as model_file:
@@ -284,7 +291,9 @@ def home(request):
         with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for i, row in enumerate(reader):
-                if row['name'] == user.first_name:
+                if i == 1:
+                    name = row['name']
+                    gender = row['gender']
                     age = row['age']
                     bmi = row['bmi']
                     high_bp = row['blood_pressure_top']
@@ -326,15 +335,14 @@ def home(request):
                     print(f"Error processing row: {row}, Error: {e}")
 
         # Debugging output to validate JSON structure
-        gender_numeric = 2 if user.userdetail.gender == 'M' else 1
+        gender_numeric = 2 if gender == 'Male' else 1
         active = 0
         if int(heart_rate) > 120 and float(body_temp) > 36.2:
             active = 1
         else:
             active = 0
 
-        weight = user.userdetail.weight
-        age = user.userdetail.age
+        weight = UserDetail.objects.values_list('weight').get(user__first_name=name)[0]
         high_bp = high_bp
         low_bp = low_bp
         height = int(sqrt(float(weight) / float(bmi)) * 100)
@@ -491,7 +499,7 @@ def home(request):
                        'xgb_prediction': int(xgb_prediction)})
 
 
-def login_view(request):
+def login_view(request, organisation):
     if request.user.is_authenticated:
         return redirect('home')
 
@@ -499,10 +507,13 @@ def login_view(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         password = request.POST.get('password')
+        super_user = False
+        if organisation:
+            super_user = True
 
         # Fetch the user by email
         try:
-            user = User.objects.get(email=email)  # Get user based on email
+            user = User.objects.get(email=email, is_superuser=super_user)  # Get user based on email
         except User.DoesNotExist:
             user = None
 
@@ -517,6 +528,8 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid email or password')
 
+    if organisation:
+        return render(request, 'organisation_login.html')
     return render(request, 'login.html')
 
 
