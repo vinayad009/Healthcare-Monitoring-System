@@ -79,7 +79,8 @@ def add_health_info(request):
         active = int(active)
 
         try:
-            model_path = os.path.join(settings.BASE_DIR, "XGboost1.pkl")
+            # Load the LightGBM model
+            model_path = os.path.join(settings.BASE_DIR, "lightgbm_model.pkl")
             with open(model_path, 'rb') as model_file:
                 model = pickle.load(model_file)
 
@@ -89,21 +90,12 @@ def add_health_info(request):
                 glucose, smoke, alcohol, active
             ]).reshape(1, -1)
 
-            # training_features = np.array([[25, 1, 170, 70, 120, 80, 150, 100, 0, 1, 1]])  # Replace with your training data
-            # scaler.fit(training_features)  # Fit the scaler with training data
-
-            # user_processed = scaler.transform(input_features)
-
-            # # Predict using the trained model
-            # user_prediction_prob = model.predict(user_processed).flatten()[0]
-            # user_prediction = 1 if user_prediction_prob > 0.5 else 0
-
+            # Predict using the loaded model
             prediction = model.predict(input_features)
-            print(prediction)
+            binary_prediction = 1 if prediction > 0.5 else 0
+            prediction_message = binary_prediction
 
-            # Convert prediction to human-readable message
-            # prediction_message = (prediction > 0.5).astype(int)
-            prediction_message = prediction
+            print("Binary prediction: ", prediction_message)
 
             status = 0
 
@@ -181,7 +173,8 @@ def add_full_health_info(request):
         active = int(active)
 
         try:
-            model_path = os.path.join(settings.BASE_DIR, "XGboost1.pkl")
+            # Load the LightGBM model
+            model_path = os.path.join(settings.BASE_DIR, "lightgbm_model.pkl")
             with open(model_path, 'rb') as model_file:
                 model = pickle.load(model_file)
 
@@ -191,12 +184,12 @@ def add_full_health_info(request):
                 glucose, smoke, alcohol, active
             ]).reshape(1, -1)
 
+            # Predict using the loaded model
             prediction = model.predict(input_features)
-            print(prediction)
+            binary_prediction = 1 if prediction > 0.5 else 0
+            prediction_message = binary_prediction
 
-            # Convert prediction to human-readable message
-            # prediction_message = (prediction > 0.5).astype(int)
-            prediction_message = prediction
+            print("Binary prediction: ", prediction_message)
 
             status = 0
 
