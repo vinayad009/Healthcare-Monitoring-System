@@ -1,5 +1,4 @@
-Django==5.0.2
-Django==5.1.4
+Django
 lightgbm==4.5.0
 numpy==2.2.1
 pandas==2.2.3
