@@ -1,0 +1,8 @@
+Django==5.0.2
+Django==5.1.4
+lightgbm==4.5.0
+numpy==2.2.1
+pandas==2.2.3
+replicate==1.0.4
+scikit_learn==1.6.0
+xgboost==2.1.3
