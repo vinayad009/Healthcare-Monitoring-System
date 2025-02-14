@@ -18,6 +18,7 @@ OR
 python manage.py runserver
 ```
 
+
 Incase of any changes to models. Ensure to run the below 2 commands to reflect the changes in the project:
 ```
 python3 manage.py makemigrations
