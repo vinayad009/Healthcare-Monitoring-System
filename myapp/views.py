@@ -135,7 +135,7 @@ def add_health_info(request):
 
             phone_number = user.userdetail.phone_number  # Replace with your user's phone field
 
-            whatsapp_response = send_whatsapp_message(phone_number, request.user.first_name, binary_prediction, summary)
+            whatsapp_response = send_whatsapp_message(phone_number, request.user.first_name, status, summary)
             if whatsapp_response:
                 print("WhatsApp message sent successfully:", whatsapp_response)
             else:
