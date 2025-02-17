@@ -4,7 +4,7 @@ import replicate
 # Initialize the Replicate client
 def suggestions(age, gender, ap_hi, ap_lo, active, smoke, cholesterol, glucose, model_prediction):
     client = replicate.Client(
-        api_token="r8_8vMPpCw9hEY5nZH3F5EFWHI3UH3pTzO3LtfV5"  # Replace with your actual API key
+        api_token="r8_0HzSA00FtuarpIgzJ76sPEOdDwNeJuC09ajDO"  # Replace with your actual API key
     )
 
     gender = 'male' if gender == 'M' else 'female'
