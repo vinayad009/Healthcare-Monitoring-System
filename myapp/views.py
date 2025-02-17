@@ -19,6 +19,7 @@ from .models import UserDetail
 from django.views.decorators.csrf import csrf_exempt
 from sklearn.preprocessing import StandardScaler
 from .LLM_model.LLM import suggestions
+from .LLM_model.whatsapp_api import send_whatsapp_message
 
 
 @login_required
@@ -121,6 +122,24 @@ def add_health_info(request):
                 glucose=glucose,
                 model_prediction=status
             )
+#             summary = """Based on the data provided, the patient is at high risk of developing cardiovascular disease. Here are some tailored recommendations to improve their health:
+#
+# * Maintain a healthy diet: Eating a balanced diet low in saturated fats, trans fats, sodium, and added sugars can help reduce the risk of cardiovascular disease.
+# * Exercise regularly: Engaging in moderate-intensity aerobic exercise, such as brisk walking, for at least 150 minutes per week can help lower blood pressure and reduce the risk of cardiovascular disease.
+# * Reduce stress: High levels of stress can increase blood pressure and damage the blood vessels, so finding ways to manage stress, such as through meditation or yoga, can be beneficial.
+# * Monitor blood pressure regularly: Keep track of your blood pressure readings and consult a healthcare professional if there are any significant changes.
+#
+# The patient's high blood pressure and lack of physical activity suggest an increased risk of developing cardiovascular disease. It is essential for the patient to work with a healthcare professional to create a personalized plan to address these risks and improve their overall health.
+#
+# Please note that this advice is not a substitute for professional medical guidance. It is crucial to consult a healthcare professional for personalized advice and treatment."""
+
+            phone_number = user.userdetail.phone_number  # Replace with your user's phone field
+
+            whatsapp_response = send_whatsapp_message(phone_number, request.user.first_name, binary_prediction, summary)
+            if whatsapp_response:
+                print("WhatsApp message sent successfully:", whatsapp_response)
+            else:
+                print("Failed to send WhatsApp message.")
 
             print(summary)
 
@@ -163,7 +182,7 @@ def get_user_data(request):
 
     return JsonResponse(userData)
 
-
+@csrf_exempt
 @login_required
 def home(request):
     user = request.user

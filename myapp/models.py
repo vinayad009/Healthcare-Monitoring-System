@@ -8,6 +8,7 @@ class UserDetail(models.Model):
     gender = models.CharField(max_length=1, null=False, blank=False)
     age = models.IntegerField(null=True, blank=True)
     weight = models.IntegerField(blank=True, null=True)
+    phone_number = models.CharField(max_length=12, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.first_name}"

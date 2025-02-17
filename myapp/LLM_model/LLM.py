@@ -62,12 +62,11 @@ def suggestions(age, gender, ap_hi, ap_lo, active, smoke, cholesterol, glucose, 
                 "prompt": prompt,
                 "max_tokens": 512,
                 "temperature": 0.3,
-                "system_prompt": ("Analyze the patient's health data below to provide concise, actionable advice in under 200 words."
+                "system_prompt": ("Analyze the patient's health data below to provide concise, actionable advice in under 50 words."
     
                 "Start with an introductory sentence summarising the patient's health risks and overall status."
                 "Provide 4–5 practical, tailored recommendations formatted as bullet points (each under 20 words)."
                 "Predict potential health risks or diseases based on patient data with short explanations (2–3 sentences)."
-                "End with a disclaimer urging the patient to consult a healthcare professional for final guidance."
                 "Keep the tone professional, not overly formal."
 
                 ),
